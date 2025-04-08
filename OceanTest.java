@@ -10,13 +10,11 @@ import org.junit.jupiter.api.Test;
 class OceanTest {
 
 	Ocean ocean;
-	
 	static int NUM_BATTLESHIPS = 1;
 	static int NUM_CRUISERS = 2;
 	static int NUM_DESTROYERS = 3;
 	static int NUM_SUBMARINES = 4;
 	static int OCEAN_SIZE = 10;
-	
 	@BeforeEach
 	void setUp() throws Exception {
 		ocean = new Ocean();
@@ -97,9 +95,10 @@ class OceanTest {
 				+ (NUM_CRUISERS * 3)
 				+ (NUM_DESTROYERS * 2)
 				+ (NUM_SUBMARINES * 1);
-		
 		//test number of empty seas, each with length of 1
+		System.out.println(numEmptySeas);
 		assertEquals(totalSpaces - occupiedSpaces, numEmptySeas);
+		assertEquals(numEmptySeas, 80);
 	}
 
 	@Test
@@ -118,9 +117,14 @@ class OceanTest {
 		submarine.placeShipAt(row, column, horizontal, ocean);
 		
 		assertTrue(ocean.isOccupied(1, 5));
+		assertTrue(ocean.isOccupied(0, 0));
 		
-		//TODO
-		//More tests
+		Battleship battleship = new Battleship();
+		battleship.placeShipAt(3, 3, true, ocean);
+		assertTrue(ocean.isOccupied(3, 3));
+		assertTrue(ocean.isOccupied(3, 2));
+		assertTrue(ocean.isOccupied(3, 1 ));
+		assertTrue(ocean.isOccupied(3, 0));
 	}
 
 	@Test
@@ -138,8 +142,11 @@ class OceanTest {
 		assertFalse(destroyer.isSunk());
 		assertTrue(ocean.shootAt(0, 5));
 		
-		//TODO
-		//More tests
+		assertFalse(ocean.shootAt(1, 5));
+		assertFalse(ocean.shootAt(0, 5));
+		assertFalse(ocean.shootAt(0, 4));
+		assertFalse(ocean.shootAt(1, 4));
+		
 	}
 
 	@Test
@@ -169,9 +176,15 @@ class OceanTest {
 		assertTrue(ocean.shootAt(0, 5));
 		assertTrue(destroyer.isSunk());
 		assertEquals(6, ocean.getShotsFired());
+
+		assertFalse(ocean.shootAt(1, 5));
+		assertFalse(ocean.shootAt(0, 5));
+		assertEquals(8, ocean.getShotsFired());
 		
-		//TODO
-		//More tests
+		assertFalse(ocean.shootAt(9, 9));
+		assertFalse(ocean.shootAt(9, 8));
+		assertEquals(10, ocean.getShotsFired());
+		
 	}
 
 	@Test
@@ -187,8 +200,13 @@ class OceanTest {
 		assertFalse(destroyer.isSunk());
 		assertEquals(1, ocean.getHitCount());
 		
-		//TODO
-		//More tests
+		Submarine submarine = new Submarine();
+		submarine.placeShipAt(1, 1, false, ocean);
+		ocean.shootAt(1, 1);
+		assertEquals(1, ocean.getShipsSunk());
+		assertEquals(2, ocean.getHitCount());
+		
+		
 	}
 	
 	@Test
@@ -205,8 +223,14 @@ class OceanTest {
 		assertEquals(1, ocean.getHitCount());
 		assertEquals(0, ocean.getShipsSunk());
 		
-		//TODO
-		//More tests
+		ocean.shootAt(0,5);
+		assertTrue(destroyer.isSunk());
+		assertEquals(1, ocean.getShipsSunk());
+		
+		Submarine submarine = new Submarine();
+		submarine.placeShipAt(9, 9, false, ocean);
+		ocean.shootAt(9, 9);
+		assertEquals(2, ocean.getShipsSunk());
 	}
 
 	@Test
@@ -218,8 +242,17 @@ class OceanTest {
 		
 		assertEquals("empty", shipArray[0][0].getShipType());
 		
-		//TODO
-		//More tests
+		Ship submarine = new Submarine();
+		submarine.placeShipAt(9, 9, false, ocean);
+		shipArray = ocean.getShipArray();
+		assertEquals(shipArray[9][9].getShipType(), "submarine");
+
+
+		ocean.shootAt(9, 9);
+		assertTrue(submarine.isSunk());
+		shipArray = ocean.getShipArray();
+		assertEquals(shipArray[9][9].getShipType(), "submarine");
+
 	}
 
 }
